@@ -55,4 +55,22 @@ public class Catalog {
         return result
     }
     
+    func getProductById(_ id: Int) -> Product? {
+        for product in products {
+            if product.id == id {
+                return product
+            }
+        }
+        return nil
+    }
+    
+    func getProductByName(_ name: String) -> Product? {
+        for product in products {
+            if product.name == name {
+                return product
+            }
+        }
+        return nil
+    }
+    
 }
