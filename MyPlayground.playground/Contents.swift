@@ -1,4 +1,4 @@
-//Разделы каталога
+///Разделы каталога
 enum Categories: String {
     case Electronics = "Электроника"
     case Clothing = "Одежда"
@@ -8,80 +8,63 @@ enum Categories: String {
     case ToysAndGames = "Игрушки и игры"
 }
 
-//Свойства товара
-struct productCatalog {
+///Свойства товара
+struct ProductItem {
     let idProduct: Int
     let nameProduct: String
-    var priceProduct: Int
-    var categoriesProduct: Categories
-    var itemsInStock: Int?
-    var onSale: Bool
+    let priceProduct: Double
+    let categoriesProduct: Categories
+    let itemsInStock: Int?
+    let onSale: Bool
 }
 
-let product1 = productCatalog(idProduct: 1, nameProduct: "iPhone 17", priceProduct: 75376, categoriesProduct: .Electronics, itemsInStock: 10, onSale: true)
-let product2 = productCatalog(idProduct: 2, nameProduct: "Куртка Columbia", priceProduct: 8897, categoriesProduct: .Clothing, itemsInStock: 50, onSale: false)
-let product3 = productCatalog(idProduct: 3, nameProduct: "Кулинарная книга", priceProduct: 550, categoriesProduct: .Books, itemsInStock: 1000, onSale: true)
-let product4 = productCatalog(idProduct: 4, nameProduct: "Рецепты", priceProduct: 250, categoriesProduct: .Books, itemsInStock: 1000, onSale: true)
-let product5 = productCatalog(idProduct: 5, nameProduct: "Кофеварка Tuvio", priceProduct: 15678, categoriesProduct: .HomeAndKitchen, itemsInStock: 279, onSale: false)
-let product6 = productCatalog(idProduct: 6, nameProduct: "Палатка", priceProduct: 2389, categoriesProduct: .SportsAndOutdoors, itemsInStock: 2467, onSale: true)
-let product7 = productCatalog(idProduct: 7, nameProduct: "Шахматы", priceProduct: 1234, categoriesProduct: .ToysAndGames, itemsInStock: nil, onSale: true)
+///Каталог
+struct ProductCatalog {
+    //Массив продуктов
+    var items: [ProductItem]
+}
 
-let arrayProduct: [productCatalog] = [product1, product2, product3, product4, product5, product6, product7]
+let item1: ProductItem = ProductItem(idProduct: 1, nameProduct: "iPhone 17", priceProduct: 75376, categoriesProduct: .Electronics, itemsInStock: 10, onSale: true)
+let item2: ProductItem = ProductItem(idProduct: 2, nameProduct: "Куртка Columbia", priceProduct: 8897, categoriesProduct: .Clothing, itemsInStock: 50, onSale: false)
+let item3: ProductItem = ProductItem(idProduct: 3, nameProduct: "Кулинарная книга", priceProduct: 550, categoriesProduct: .Books, itemsInStock: 1000, onSale: true)
+let item4: ProductItem = ProductItem(idProduct: 4, nameProduct: "Рецепты", priceProduct: 250, categoriesProduct: .Books, itemsInStock: 1000, onSale: true)
+let item5: ProductItem = ProductItem(idProduct: 5, nameProduct: "Кофеварка Tuvio", priceProduct: 15678, categoriesProduct: .HomeAndKitchen, itemsInStock: 279, onSale: false)
+let item6: ProductItem = ProductItem(idProduct: 6, nameProduct: "Палатка", priceProduct: 2389, categoriesProduct: .SportsAndOutdoors, itemsInStock: 2467, onSale: true)
+let item7: ProductItem = ProductItem(idProduct: 7, nameProduct: "Шахматы", priceProduct: 1234, categoriesProduct: .ToysAndGames, itemsInStock: nil, onSale: true)
 
+///Массив товаров
+let listProducts: [ProductItem] = [item1, item2, item3, item4, item5, item6, item7]
 
-//Принимает статус в Bool и конвертирует в String
-func transformSaleStatus(saleStatus: productCatalog) -> String {
-    if saleStatus.onSale == true {
-        return "Да"
-    } else {
-        return "Нет"
+///Вывод товаров
+func printItems(items: [ProductItem]) {
+    print("=== КАТАЛОГ ===\n")
+    for items in items {
+        var transformStatus: String {items.onSale ? "Да" : "Нет"}
+        let inStock = items.itemsInStock ?? 0
+        print("\(items.nameProduct) - \(items.priceProduct) ₽\nКатегория: \(items.categoriesProduct.rawValue)\nНа складе: \(inStock)\nСкидка: \(transformStatus)\n")
     }
 }
+printItems(items: listProducts)
 
-//Выводит информацию о товарах (Каталог товаров)
-func catalogItems(productInfo: [productCatalog]) {
-    print("=== КАТАЛОГ === \n")
-    for productInfo in productInfo {
-        let boolInText = transformSaleStatus(saleStatus: productInfo)
-        let inStock = productInfo.itemsInStock ?? 0
-        
-        print("\(productInfo.nameProduct) - \(productInfo.priceProduct) ₽\nКатегория: \(productInfo.categoriesProduct.rawValue)\nНа складе: \(inStock)\nСкидка: \(boolInText)\n ")
-    }
-}
-catalogItems(productInfo: arrayProduct)
-
-
-//Ввод через свойство Enum, раздела из которого нужно отобразить товары
-let categoriesName: Categories = .Books
-
-//Поиск товаров по переданной категории из categoriesName
-func findCategoriesItem(productInfo: [productCatalog]) {
-    print("=== \(categoriesName.rawValue) === \n")
-    var items = ""
-    
-    
-    for productInfo in productInfo {
-        if productInfo.categoriesProduct.rawValue == categoriesName.rawValue {
-            items += productInfo.nameProduct + "\n"
+///Вывод раздела и его товаров
+func printTitleCatalogAndCategories(categories: Categories) {
+    print("=== \(categories.rawValue) ===\n")
+    for items in listProducts {
+        if items.categoriesProduct == categories {
+            print(items.nameProduct)
         }
     }
-    print(items)
 }
-findCategoriesItem(productInfo: arrayProduct)
+printTitleCatalogAndCategories(categories: .Books)
 
-//Задаем значение для фильтра по стоимости
-let valueOverPrice = 10000
-
-//Фильтр по стоимости
-func findOverpriceItem(productInfo: [productCatalog]){
-    print("=== ТОВАРЫ ДОРОЖЕ 10000 ₽ === \n")
-    var items = ""
-    for productInfo in productInfo {
-        if productInfo.priceProduct >= valueOverPrice {
-            items += "\(productInfo.nameProduct) - \(productInfo.priceProduct) ₽\n"
+func printProductOverprice(price: Double, items: [ProductItem]) {
+    print("\n=== ТОВАРЫ ДОРОЖЕ \(price) ₽ ===\n")
+    var sortItems = ""
+    for items in items {
+        if items.priceProduct > price {
+            sortItems += ("\(items.nameProduct) - \(items.priceProduct) ₽\n")
         }
     }
-    print(items)
+    print(sortItems)
 }
-findOverpriceItem(productInfo: arrayProduct)
-
+printProductOverprice(price: 10000, items: listProducts)
