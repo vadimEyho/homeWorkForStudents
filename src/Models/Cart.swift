@@ -5,6 +5,25 @@
 //  Created by Lizaveta on 14.08.2026.
 //
 
+public enum PromoCode: String {
+    case swift10 = "SWIFT10"
+    case student = "STUDENT"
+    case sale500 = "SALE500"
+    case family = "FAMILY"
+    
+    func applyDiscount(amount: Double) -> Double {
+        switch self {
+        case .swift10:
+            return amount * 0.9
+        case .student:
+            return amount * 0.95
+        case .sale500:
+            return max(0, amount - 500)
+        case .family:
+            return max(0, amount - 1000)
+        }
+    }
+}
 public class CartItem {
     var product: Product
     var count: Int
@@ -18,10 +37,21 @@ public class CartItem {
         return product.price * Double(count)
     }
     
+    var discountedPrice: Double {
+        if product.discount {
+            return totalPrice * 0.9
+        } else {
+            return totalPrice
+        }
+    }
+    
+    var discountAmount: Double {
+        return totalPrice - discountedPrice
+    }
+    
     func printInfo() {
         print("\(product.name) x\(count) — \(Int(product.price * Double(count))) ₽")
     }
-    
 }
 
 public class Cart {
@@ -32,6 +62,7 @@ public class Cart {
         self.items = items
         self.catalog = catalog
     }
+    
     init() {
         self.items = []
         self.catalog = Catalog()
@@ -117,10 +148,85 @@ public class Cart {
         return true
     }
     
+    // стоимость товаров без скидок
+    func totalCostWithoutDiscount() -> Double {
+        var totalCost: Double = 0
+        
+        for item in items {
+            totalCost = totalCost + item.totalPrice
+        }
+        
+        return totalCost
+    }
+
+    // стоимость товаров со скидкой на товар
+    func discountedTotalCost() -> Double {
+        var totalCost: Double = 0
+        
+        for item in items {
+            totalCost = totalCost + item.discountedPrice
+        }
+        
+        return totalCost
+    }
+
+    // сумма скидок на товары
+    func totalDiscountAmount() -> Double {
+        var totalDiscount: Double = 0
+        
+        for item in items {
+            totalDiscount = totalDiscount + item.discountAmount
+        }
+        
+        return totalDiscount
+    }
+    
+    // применить промокод
+    func applyPromoCode(_ promo: String) -> Double {
+        guard let promoCode = PromoCode(rawValue: promo.uppercased()) else {
+            print("Неизвестная промо-акция")
+            return discountedTotalCost()
+        }
+        
+        let currentTotal = discountedTotalCost()
+        let discountedTotal = promoCode.applyDiscount(amount: currentTotal)
+        let discountAmount = currentTotal - discountedTotal
+        
+        print("Промокод: \(promoCode.rawValue)")
+        print("Скидка по промокоду: \(Int(discountAmount)) ₽")
+        
+        return discountedTotal
+    }
+
     func printInfo() {
+        print("\n=== РАСЧЁТ КОРЗИНЫ ===\n")
+        
         for item in items {
             item.printInfo()
+            print()
         }
         print("\nВсего позиций: \(items.count)")
+        print("Стоимость без скидок: \(Int(totalCostWithoutDiscount())) ₽")
+        print("Скидка на товары: \(Int(totalDiscountAmount())) ₽")
+        print()
+    }
+    
+    func printWithPromo(_ promo: String) {
+        printInfo()
+        
+        let finalPrice = applyPromoCode(promo)
+        print("Итого к оплате: \(Int(finalPrice)) ₽")
+        print()
+    }
+    
+    // получение списка запрещенных товаров
+    func getForbiddenProducts() -> [Product] {
+        var forbiddenItems: [Product] = []
+        for item in items {
+            if item.product.category == .electronics && item.product.price > 100000 {
+                forbiddenItems.append(item.product)
+            }
+        }
+        return forbiddenItems
     }
 }

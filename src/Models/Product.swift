@@ -14,7 +14,7 @@ enum Category: String {
     case books = "Книги"
 }
 
-public class Product {
+struct Product {
     // UUID???
     var id: Int
     var name: String
@@ -22,15 +22,6 @@ public class Product {
     var category: Category
     var count: Int
     var discount: Bool
-    
-    init(id: Int, name: String, price: Double, category: Category, count: Int, discount: Bool) {
-        self.id = id
-        self.name = name
-        self.price = price
-        self.category = category
-        self.count = count
-        self.discount = discount
-    }
     
     func printInfo() {
         print("\(name) — \(Int(price)) ₽")
