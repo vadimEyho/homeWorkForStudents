@@ -1,3 +1,12 @@
+//
+//  Catalog.swift
+//  LessonProject
+//
+//  Created by Александр Трубкин on 24.08.2026.
+//
+
+import Foundation
+
 ///Разделы каталога
 enum Categories: String {
     case Electronics = "Электроника"
@@ -9,12 +18,12 @@ enum Categories: String {
 }
 
 ///Свойства товара
-struct ProductItem {
+struct ProductItem: Equatable {
     let idProduct: Int
     let nameProduct: String
     let priceProduct: Double
     let categoriesProduct: Categories
-    let itemsInStock: Int?
+    var itemsInStock: Int?
     let onSale: Bool
 }
 
@@ -24,13 +33,14 @@ struct ProductCatalog {
     var items: [ProductItem]
 }
 
-let item1: ProductItem = ProductItem(idProduct: 1, nameProduct: "iPhone 17", priceProduct: 75376, categoriesProduct: .Electronics, itemsInStock: 10, onSale: true)
+
+let item1: ProductItem = ProductItem(idProduct: 1, nameProduct: "iPhone 17", priceProduct: 75376, categoriesProduct: .Electronics, itemsInStock: 1, onSale: true)
 let item2: ProductItem = ProductItem(idProduct: 2, nameProduct: "Куртка Columbia", priceProduct: 8897, categoriesProduct: .Clothing, itemsInStock: 50, onSale: false)
 let item3: ProductItem = ProductItem(idProduct: 3, nameProduct: "Кулинарная книга", priceProduct: 550, categoriesProduct: .Books, itemsInStock: 1000, onSale: true)
-let item4: ProductItem = ProductItem(idProduct: 4, nameProduct: "Рецепты", priceProduct: 250, categoriesProduct: .Books, itemsInStock: 1000, onSale: true)
+let item4: ProductItem = ProductItem(idProduct: 4, nameProduct: "Рецепты", priceProduct: 250, categoriesProduct: .Books, itemsInStock: 1000, onSale: false)
 let item5: ProductItem = ProductItem(idProduct: 5, nameProduct: "Кофеварка Tuvio", priceProduct: 15678, categoriesProduct: .HomeAndKitchen, itemsInStock: 279, onSale: false)
 let item6: ProductItem = ProductItem(idProduct: 6, nameProduct: "Палатка", priceProduct: 2389, categoriesProduct: .SportsAndOutdoors, itemsInStock: 2467, onSale: true)
-let item7: ProductItem = ProductItem(idProduct: 7, nameProduct: "Шахматы", priceProduct: 1234, categoriesProduct: .ToysAndGames, itemsInStock: nil, onSale: true)
+let item7: ProductItem = ProductItem(idProduct: 7, nameProduct: "Шахматы", priceProduct: 1234, categoriesProduct: .ToysAndGames, itemsInStock: nil, onSale: false)
 
 ///Массив товаров
 let listProducts: [ProductItem] = [item1, item2, item3, item4, item5, item6, item7]
@@ -44,7 +54,6 @@ func printItems(items: [ProductItem]) {
         print("\(items.nameProduct) - \(items.priceProduct) ₽\nКатегория: \(items.categoriesProduct.rawValue)\nНа складе: \(inStock)\nСкидка: \(transformStatus)\n")
     }
 }
-printItems(items: listProducts)
 
 ///Вывод раздела и его товаров
 func printTitleCatalogAndCategories(categories: Categories) {
@@ -55,8 +64,8 @@ func printTitleCatalogAndCategories(categories: Categories) {
         }
     }
 }
-printTitleCatalogAndCategories(categories: .Books)
 
+///Вывод товаров дороже введенной суммы
 func printProductOverprice(price: Double, items: [ProductItem]) {
     print("\n=== ТОВАРЫ ДОРОЖЕ \(price) ₽ ===\n")
     var sortItems = ""
@@ -67,4 +76,3 @@ func printProductOverprice(price: Double, items: [ProductItem]) {
     }
     print(sortItems)
 }
-printProductOverprice(price: 10000, items: listProducts)
