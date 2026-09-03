@@ -78,10 +78,10 @@ class Basket {
                 let quantity = quantity(product: product)
                 if product.onSale == true {
                     let discountedProduct = product.priceProduct * 0.9
-                    print("\(product.nameProduct) x\(quantity) — \(Int(discountedProduct * Double(quantity))) ₽\n")
+                    print("\(product.nameProduct) x\(quantity) — \(Int(discountedProduct * Double(quantity))) ₽")
                 } else {
                     let notDiscountedProduct = product.priceProduct
-                    print("\(product.nameProduct) x\(quantity) — \(Int(notDiscountedProduct * Double(quantity))) ₽\n")
+                    print("\(product.nameProduct) x\(quantity) — \(Int(notDiscountedProduct * Double(quantity))) ₽")
                 }
             }
             
@@ -112,7 +112,7 @@ class Basket {
                     //Считаем размер получившейся скидки
                     let sumSale = product.priceProduct - discountedProduct
                     //Добавляем значения во внешние переменные для print
-                    totalFullSalePrice += product.priceProduct * Double(quantity)
+                    totalFullSalePrice += discountedProduct * Double(quantity)
                     totalDiscountSum += sumSale * Double(quantity)
                     
                     print("\(product.nameProduct) x\(quantity)\nСтоимость: \(Int(discountedProduct * Double(quantity))) ₽\nТовар учавствует в акции, применена скидка 10%: \(Int(sumSale)) ₽\n")
@@ -127,7 +127,7 @@ class Basket {
                 return Int(totalDiscountSum)
         }
     
-        ///Печать только название товаров и их обзей стоимости для блока пользователя
+        ///Печать только название товаров и их общей стоимости для блока пользователя
         func printOnlyItem() -> String {
             var uniqueProducts: [ProductItem] = []
             var isNameProduct = " "
@@ -209,5 +209,45 @@ class Basket {
             } else {
                 print("Промокод: - \n")
             }
+        }
+    
+        ///Печать чека
+        func printCheckUser() -> Int {
+            print("=== ЧЕК ===\n")
+            var uniqueProducts: [ProductItem] = []
+            var fullPriceBasketNotSale = 0.0
+//            var totalFullSalePrice = 0.0
+            var totalDiscountSum = 0.0
+            var sumBasket = 0.0
+            
+            for product in products {
+                if !uniqueProducts.contains(product) {
+                    uniqueProducts.append(product)
+                }
+                fullPriceBasketNotSale += product.priceProduct
+            }
+            
+            for product in uniqueProducts {
+                let quantity = quantity(product: product)
+                if product.onSale == true {
+                    //Делаем скидку 10%
+                    let discountedProduct = product.priceProduct * 0.9
+                    //Считаем размер получившейся скидки
+                    let sumSale = product.priceProduct - discountedProduct
+                    //Добавляем значения во внешние переменные для print
+                    sumBasket += discountedProduct * Double(quantity)
+                    totalDiscountSum += sumSale * Double(quantity)
+                    
+                    print("\(product.nameProduct) x\(quantity) - \(Int(discountedProduct * Double(quantity))) ₽")
+                } else {
+                    let notDiscountedProduct = product.priceProduct
+                    sumBasket += product.priceProduct * Double(quantity)
+                    print("\(product.nameProduct) x\(quantity) - \(Int(notDiscountedProduct * Double(quantity))) ₽\n")
+                }
+            }
+                print("Стоимость товаров: \(Int(fullPriceBasketNotSale))")
+                print("Скидка: \(Int(totalDiscountSum))\n")
+                print("Итого: \(Int(sumBasket))\n")
+                return Int(sumBasket)
         }
     }

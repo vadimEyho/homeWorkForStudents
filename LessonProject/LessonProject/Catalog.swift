@@ -18,23 +18,48 @@ enum Categories: String {
 }
 
 ///Свойства товара
-struct ProductItem: Equatable {
+class ProductItem: Equatable {
     let idProduct: Int
     let nameProduct: String
     let priceProduct: Double
     let categoriesProduct: Categories
     var itemsInStock: Int?
     let onSale: Bool
+    
+    init(idProduct: Int, nameProduct: String, priceProduct: Double, categoriesProduct: Categories, itemsInStock: Int? = nil, onSale: Bool) {
+        self.idProduct = idProduct
+        self.nameProduct = nameProduct
+        self.priceProduct = priceProduct
+        self.categoriesProduct = categoriesProduct
+        self.itemsInStock = itemsInStock
+        self.onSale = onSale
+    }
+    
+    // Cравнения двух товаров
+    static func == (lhs: ProductItem, rhs: ProductItem) -> Bool {
+        return lhs.idProduct == rhs.idProduct
+    }
 }
 
 ///Каталог
 struct ProductCatalog {
     //Массив продуктов
     var items: [ProductItem]
+    
+    func printStockStatus() {
+        print("\n=== ОСТАТКИ ===\n")
+        for item in items {
+            if let itemNil = item.itemsInStock {
+                print("\(item.nameProduct) - \(itemNil) шт.")
+            } else {
+                print("\(item.nameProduct) - 0 шт.")
+            }
+            
+        }
+    }
 }
 
-
-let item1: ProductItem = ProductItem(idProduct: 1, nameProduct: "iPhone 17", priceProduct: 75376, categoriesProduct: .Electronics, itemsInStock: 1, onSale: true)
+let item1: ProductItem = ProductItem(idProduct: 1, nameProduct: "iPhone 17", priceProduct: 175376, categoriesProduct: .Electronics, itemsInStock: 1, onSale: true)
 let item2: ProductItem = ProductItem(idProduct: 2, nameProduct: "Куртка Columbia", priceProduct: 8897, categoriesProduct: .Clothing, itemsInStock: 50, onSale: false)
 let item3: ProductItem = ProductItem(idProduct: 3, nameProduct: "Кулинарная книга", priceProduct: 550, categoriesProduct: .Books, itemsInStock: 1000, onSale: true)
 let item4: ProductItem = ProductItem(idProduct: 4, nameProduct: "Рецепты", priceProduct: 250, categoriesProduct: .Books, itemsInStock: 1000, onSale: false)
@@ -44,6 +69,8 @@ let item7: ProductItem = ProductItem(idProduct: 7, nameProduct: "Шахматы"
 
 ///Массив товаров
 let listProducts: [ProductItem] = [item1, item2, item3, item4, item5, item6, item7]
+///Создание каталога
+let myCatalog = ProductCatalog(items: listProducts)
 
 ///Вывод товаров
 func printItems(items: [ProductItem]) {
@@ -76,3 +103,4 @@ func printProductOverprice(price: Double, items: [ProductItem]) {
     }
     print(sortItems)
 }
+
