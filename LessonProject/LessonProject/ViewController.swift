@@ -14,9 +14,9 @@ class ViewController: UIViewController {
         
         view.backgroundColor = .systemCyan
             ///Часть 1
-//            printItems(items: listProducts)
-//            printTitleCatalogAndCategories(categories: .Books)
-//            printProductOverprice(price: 10000, items: listProducts)
+            printItems(items: listProducts)
+            printTitleCatalogAndCategories(categories: .Books)
+            printProductOverprice(price: 10000, items: listProducts)
         
             ///Добавления товара в корзину определенному пользователю
             user1.userBasket.addProduct(product: item1)
@@ -27,19 +27,23 @@ class ViewController: UIViewController {
             user1.userBasket.addProduct(product: item7)
         
             ///Часть 2
-            //Вывод данных пользователя
-//            user1.printUserInfo()
-//            user1.userBasket.printBasketStockStatus()
-//            user1.userBasket.printBasketSummary()
-            
+//            Вывод данных пользователя
+            user1.printUserInfo()
+            user1.userBasket.printBasketStockStatus()
+            user1.userBasket.printBasketSummary()
+
+
+        // TODO: Тут у корзины должна быть промежуточная функция которая мапит введеное пользователем в кейса промокодов
+//        let promo = user1.userBasket.mapPromo() -> PromoCode
+
+
             ///Часть 3
-//            user1.userBasket.calculatePriceFinal(promo: "SWIFT10")
-//            user1.printBasketAndCheckAge()
+            user1.userBasket.calculatePriceFinal(promo: "SWIFT10")
+            user1.printBasketAndCheckAge()
         
             ///Часть 4
             user1.chekout()
     }
-
 
 }
 
