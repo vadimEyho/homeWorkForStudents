@@ -14,7 +14,6 @@ class Basket {
     // Товары в корзине
     var products: [ProductItem] = []
     
-    /// Посмотри что можно еще вынести в переменную
     /// Скидка 10%
     var totalSum: Double {
         var valueSum: Double = 0
@@ -228,10 +227,14 @@ class Basket {
         }
         processOrder(user: user, promo: promo)
     }
-
+    
     
     ///Оформляем заказ и чек
-    func processOrder(user: User, promo: PromoCode) {
+    func processOrder(user: User, promo: PromoCode){
+        //Собираем детальную история заказа
+        var orderItems: [OrderItem] = []
+        //Собираем история заказа
+        //        var orderHistory: [OrderHistory] = []
         print("=== ОФОРМЛЕНИЕ ЗАКАЗА ===\n")
         user.printUserInfo()
         print("\n=== ЧЕК ===\n")
@@ -239,6 +242,15 @@ class Basket {
         for product in uniqueProducts() {
             let quantity = quantity(product: product)
             let details = calculateItemDetails(product: product)
+            
+            //Создаем OrderItems
+            let item = OrderItem (
+                nameItem: product.nameProduct,
+                priceOnSale: product.onSale,
+                count: quantity,
+                priceProduct: product.priceProduct
+            )
+            orderItems.append(item)
             
             // Формат: Название xКоличество — Цена
             print("\(product.nameProduct) x\(quantity) — \(Int(details.salePrice)) ₽")
@@ -252,6 +264,18 @@ class Basket {
         let finalPrice = sale10AndPromo.0
         let totalDiscount = totalFullPrice - finalPrice
         
+        //Создаем OrderHistory
+        let valueHistory = OrderHistory (
+            user: user.userName,
+            userCartItem: orderItems,
+            itemCount: orderItems.count,
+            priceNotDiscount: totalFullPrice,
+            valueSale: totalDiscount,
+            finalPriceOrder: finalPrice,
+            numberOrder: user.userOrderHistory.count + 1
+        )
+        user.userOrderHistory.append(valueHistory)
+        
         print("\nСтоимость товаров: \(Int(totalFullPrice)) ₽")
         print("Скидка: \(Int(totalDiscount)) ₽")
         print("\nИтого: \(Int(finalPrice)) ₽")
@@ -262,7 +286,6 @@ class Basket {
         for product in user.userBasket.uniqueProducts() {
             let quantity = user.userBasket.quantity(product: product)
             
-            
             if let currentStock = product.itemsInStock {
                 product.itemsInStock = currentStock - quantity
             }
@@ -272,7 +295,7 @@ class Basket {
         let balanceBefore = Int(user.moneyCount.balance)
         user.moneyCount.balance -= finalPrice
         let balanceAfter = Int(user.moneyCount.balance)
-        print("Балан до покупки: \(Int(balanceBefore)) ₽\nБаланс после покупки: \(balanceAfter)")
+        print("Баланc до покупки: \(Int(balanceBefore)) ₽\nБаланс после покупки: \(balanceAfter)")
         
         //Обновляем статус склада
         myCatalog.printStockStatus()
@@ -284,5 +307,8 @@ class Basket {
         if user.userBasket.products.isEmpty {
             print("\n✅ Корзина успешно очищена\n =================================\n")
         }
+        
+        user.printUserHistory()
+        
     }
 }
