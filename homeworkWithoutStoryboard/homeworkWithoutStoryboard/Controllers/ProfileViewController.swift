@@ -6,8 +6,9 @@
 //
 
 import UIKit
+import SnapKit
 
-class ProfileViewController: UIViewController {
+final class ProfileViewController: UIViewController {
     
     private var currentUser: User?
 
@@ -60,18 +61,20 @@ class ProfileViewController: UIViewController {
         view.addSubview(balanceLabel)
 
         // Настраиваем Auto Layout
-        NSLayoutConstraint.activate([
-            nameLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 60),
-            nameLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),  // прижат к левому краю
-            
-            ageLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 10),
-            ageLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),  // прижат к левому краю
-            
-            balanceLabel.topAnchor.constraint(equalTo: ageLabel.bottomAnchor, constant: 10),
-            balanceLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),  // прижат к левому краю
-            
+        nameLabel.snp.makeConstraints { make in
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(60)
+            make.leading.equalToSuperview().offset(20)   // прижат к левому краю
+        }
 
-        ])
+        ageLabel.snp.makeConstraints { make in
+            make.top.equalTo(nameLabel.snp.bottom).offset(10)
+            make.leading.equalToSuperview().offset(20)   // прижат к левому краю
+        }
+
+        balanceLabel.snp.makeConstraints { make in
+            make.top.equalTo(ageLabel.snp.bottom).offset(10)
+            make.leading.equalToSuperview().offset(20)   // прижат к левому краю
+        }
     }
     
     private func updateUI() {

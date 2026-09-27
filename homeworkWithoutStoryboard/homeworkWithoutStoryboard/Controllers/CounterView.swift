@@ -1,7 +1,7 @@
 import UIKit
-
+import SnapKit
 // counter
-class CounterView: UIView {
+final class CounterView: UIView {
     private let removeButton: UIButton
     private let countLabel: UILabel
     private let addButton: UIButton
@@ -30,12 +30,9 @@ class CounterView: UIView {
         
         addSubview(stackView)
         
-        NSLayoutConstraint.activate([
-            stackView.topAnchor.constraint(equalTo: topAnchor),
-            stackView.leadingAnchor.constraint(equalTo: leadingAnchor),
-            stackView.trailingAnchor.constraint(equalTo: trailingAnchor),
-            stackView.bottomAnchor.constraint(equalTo: bottomAnchor)
-        ])
+        stackView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
     }
     
     func setCount(_ count: Int) {

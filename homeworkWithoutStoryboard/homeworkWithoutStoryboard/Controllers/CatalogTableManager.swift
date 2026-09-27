@@ -8,7 +8,7 @@ protocol ProductCellDelegate: AnyObject {
     func productCellDidTapRemove(_ cell: ProductCell)
 }
 
-class CatalogTableManager: NSObject {
+final class CatalogTableManager: NSObject {
 
     // таблица
     weak var tableView: UITableView?

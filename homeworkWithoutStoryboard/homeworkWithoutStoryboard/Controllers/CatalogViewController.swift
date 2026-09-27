@@ -6,8 +6,9 @@
 //
 
 import UIKit
+import SnapKit
 
-class CatalogViewController: UIViewController {
+final class CatalogViewController: UIViewController {
 
     //  каталог получим из DataStore
     private var products: [Product] = []
@@ -140,12 +141,11 @@ class CatalogViewController: UIViewController {
     private func setupUI() {
         view.addSubview(tableView)
 
-        NSLayoutConstraint.activate([
-            tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
-        ])
+        tableView.snp.makeConstraints { make in
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.top)
+            make.leading.trailing.equalToSuperview()
+            make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
+        }
     }
     
     // подключаем менеджер к таблице

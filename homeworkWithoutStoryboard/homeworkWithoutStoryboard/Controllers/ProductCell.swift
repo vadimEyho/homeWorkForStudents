@@ -1,6 +1,7 @@
 import UIKit
+import SnapKit
 
-class ProductCell: UITableViewCell {
+final class ProductCell: UITableViewCell {
 
     // по этому имени таблица будет доставать ячейку из очереди
     static let reuseIdentifier = "ProductCell"
@@ -77,22 +78,26 @@ class ProductCell: UITableViewCell {
         contentView.addSubview(priceLabel)
         contentView.addSubview(counterView)
 
-        NSLayoutConstraint.activate([
+        nameLabel.snp.makeConstraints { make in
             // название сверху слева
-            nameLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
-            nameLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 14),
-            nameLabel.trailingAnchor.constraint(lessThanOrEqualTo: counterView.leadingAnchor, constant: -10),
+            make.top.equalToSuperview().offset(10)
+            make.leading.equalToSuperview().offset(14)
+            make.trailing.lessThanOrEqualTo(counterView.snp.leading).offset(-10)
+        }
 
+        priceLabel.snp.makeConstraints { make in
             // цена под названием
-            priceLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 6),
-            priceLabel.leadingAnchor.constraint(equalTo: nameLabel.leadingAnchor),
-            priceLabel.trailingAnchor.constraint(lessThanOrEqualTo: counterView.leadingAnchor, constant: -10),
-            priceLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10),
+            make.top.equalTo(nameLabel.snp.bottom).offset(6)
+            make.leading.equalTo(nameLabel.snp.leading)
+            make.trailing.lessThanOrEqualTo(counterView.snp.leading).offset(-10)
+            make.bottom.equalToSuperview().offset(-10)
+        }
 
+        counterView.snp.makeConstraints { make in
             // счётчик справа по центру
-            counterView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -14),
-            counterView.centerYAnchor.constraint(equalTo: contentView.centerYAnchor)
-        ])
+            make.trailing.equalToSuperview().offset(-14)
+            make.centerY.equalToSuperview()
+        }
     }
 
     // подписываемся на нажатия кнопок

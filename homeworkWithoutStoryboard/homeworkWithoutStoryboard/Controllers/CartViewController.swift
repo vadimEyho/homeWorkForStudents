@@ -6,8 +6,9 @@
 //
 
 import UIKit
+import SnapKit
 
-class CartViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+final class CartViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
 
     //  каталог получим из DataStore
     private var currentCart: Cart {
@@ -104,35 +105,36 @@ class CartViewController: UIViewController, UITableViewDataSource, UITableViewDe
         view.addSubview(totalLabel)
         view.addSubview(placeOrderButton)
         
-        NSLayoutConstraint.activate([
-            //  сверху сейф
-            tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
-            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            
-            //  чтобы был нормальный отступ между таблицей и тотал
-            tableView.bottomAnchor.constraint(equalTo: totalLabel.topAnchor, constant: -20),
-            
-            // по центру экрана
-            emptyLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            emptyLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            
-            //  вверх уже привязали к таблице
-            totalLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            totalLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            //  привязываем вверх кнопки к низу лейбла
-            totalLabel.bottomAnchor.constraint(equalTo: placeOrderButton.topAnchor, constant: -10),
-            
-            // посередине по X
-            placeOrderButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            
-            //  низ привязываем к сейф и отступ 20
-            placeOrderButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
-            
-            // размер кнопки
-            placeOrderButton.widthAnchor.constraint(equalToConstant: 250),
-            placeOrderButton.heightAnchor.constraint(equalToConstant: 50),
-        ])
+        tableView.snp.makeConstraints { make in
+            // сверху сейф
+            make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(20)
+            make.leading.equalToSuperview()
+            make.trailing.equalToSuperview()
+            // низ привязан к верху totalLabel с отступом -20
+            make.bottom.equalTo(totalLabel.snp.top).offset(-20)
+        }
+
+        emptyLabel.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.centerY.equalToSuperview()
+        }
+
+        totalLabel.snp.makeConstraints { make in
+            // вверх уже привязан через tableView.bottom
+            make.leading.equalToSuperview().offset(20)
+            make.trailing.equalToSuperview().offset(-20)
+            // низ к верху кнопки с отступом -10
+            make.bottom.equalTo(placeOrderButton.snp.top).offset(-10)
+        }
+
+        placeOrderButton.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            // низ к сейф
+            make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-20)
+            // размеры
+            make.width.equalTo(250)
+            make.height.equalTo(50)
+        }
     }
     
     private func setupTableView() {
