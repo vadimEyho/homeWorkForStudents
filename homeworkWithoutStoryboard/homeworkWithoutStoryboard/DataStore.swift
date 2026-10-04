@@ -27,3 +27,11 @@ func setupCart() {
     _ = cart.addItemCart(name: "AirPods Pro", count: 1)
     _ = cart.addItemCart(name: "Футболка", count: 2)
 }
+
+// Глобальный пользователь — доступен всем экранам
+var currentUser: User? = User(
+    name: "Александр",
+    age: 25,
+    balance: 200000.0,
+    cart: cart
+)

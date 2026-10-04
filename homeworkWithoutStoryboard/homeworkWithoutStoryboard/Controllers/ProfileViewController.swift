@@ -10,8 +10,6 @@ import SnapKit
 
 final class ProfileViewController: UIViewController {
     
-    private var currentUser: User?
-
     private let nameLabel: UILabel = {
         let label = UILabel()
         // label.text настрою отдельно
@@ -46,7 +44,6 @@ final class ProfileViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        currentUser = User(name: "Александр", age: 25, balance: 200000.0, cart: cart)
         updateUI()
         
         setupUI()
@@ -79,8 +76,8 @@ final class ProfileViewController: UIViewController {
     
     private func updateUI() {
         nameLabel.text = currentUser?.name ?? "Гость"
-        ageLabel.text = "Возраст : \(currentUser?.age, default: "Возраст не указан")"
-        balanceLabel.text = "Баланс \(currentUser?.balance, default: "0") ₽"
+        ageLabel.text = "Возраст: \(currentUser?.age ?? 0)"
+        balanceLabel.text = "Баланс: \(Int(currentUser?.balance ?? 0)) ₽"
     }
     
     //  фабрика лейблов

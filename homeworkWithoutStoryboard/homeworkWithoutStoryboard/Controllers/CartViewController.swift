@@ -182,19 +182,32 @@ final class CartViewController: UIViewController, UITableViewDataSource, UITable
     private func updateUI() {
         if currentCart.count > 0 {
             tableView.isHidden = false
-            emptyLabel.isHidden = true  // прячем лейбл
+            emptyLabel.isHidden = true  //  прячем лейбл
             totalLabel.text = "Итого: \(Int(currentCart.discountedTotalCost())) ₽"
+            
+            //  кнопка активна
             placeOrderButton.isEnabled = true
+            placeOrderButton.backgroundColor = .systemBlue
+            placeOrderButton.setTitleColor(.white, for: .normal)
         } else {
             tableView.isHidden = true   // прячем таблицу
             emptyLabel.isHidden = false
-            totalLabel.text = "Итого: 0 ₽ "
+            totalLabel.text = "Итого: 0 ₽"
+            
+            //  кнопка заблокирована
             placeOrderButton.isEnabled = false
+            placeOrderButton.backgroundColor = .systemGray
+            placeOrderButton.setTitleColor(.white, for: .normal)
         }
         tableView.reloadData()
     }
     
     private func setupActions() {
+        placeOrderButton.addTarget(
+            self,
+            action: #selector(placeOrderTapped),
+            for: .touchUpInside
+        )
     }
     
     @objc private func clearCart() {
@@ -232,5 +245,13 @@ final class CartViewController: UIViewController, UITableViewDataSource, UITable
         present(alert, animated: true)
     }
     
-    
+    @objc private func placeOrderTapped() {
+        guard currentCart.count > 0 else {
+            showAlert(title: "Корзина пуста", message: "Добавьте товары перед оформлением")
+            return
+        }
+        
+        let checkoutVC = CheckoutViewController(cart: currentCart)
+        navigationController?.pushViewController(checkoutVC, animated: true)
+    }
 }
