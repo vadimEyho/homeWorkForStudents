@@ -1,10 +1,14 @@
 import UIKit
 import SnapKit
+import Combine
+//  MARK: CheckoutViewController + UIViewController
 
 final class CheckoutViewController: UIViewController {
 
     private let cart: Cart
 
+    private var cancellables = Set<AnyCancellable>()
+    
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.text = "Итоговый чек"
@@ -74,7 +78,11 @@ final class CheckoutViewController: UIViewController {
 
         setupUI()
         tableView.dataSource = self
-        confirmButton.addTarget(self, action: #selector(confirmTapped), for: .touchUpInside)
+        
+        confirmButton.tapPublisher
+                    .sink { [weak self] in self?.confirmTapped() }
+                    .store(in: &cancellables)
+        
         updateUI()
     }
 
@@ -143,8 +151,7 @@ final class CheckoutViewController: UIViewController {
         }
     }
 
-    @objc private func confirmTapped() {
-        //  проверяем наличие пользователя
+    private func confirmTapped() {
         guard let user = currentUser else {
             showAlert(title: "Ошибка", message: "Пользователь не авторизован")
             return
@@ -152,16 +159,13 @@ final class CheckoutViewController: UIViewController {
 
         let total = cart.discountedTotalCost()
 
-        //  проверяем баланс
         guard user.balance >= total else {
             showAlert(title: "Ошибка", message: "Недостаточно средств")
             return
         }
 
-        //  списываем средства
         user.balance -= total
 
-        //  очищаем корзину после успешной оплаты
         for item in cart.getAllItems() {
             _ = cart.removeItem(name: item.product.name, count: item.count)
         }
@@ -171,11 +175,10 @@ final class CheckoutViewController: UIViewController {
             message: "Заказ на сумму \(Int(total)) ₽ успешно оформлен.\nОстаток: \(Int(user.balance)) ₽",
             preferredStyle: .alert
         )
-        alert.addAction(UIAlertAction(title: "OK", style: .default) { [weak self] _ in
-            //  закрывает все экраны поверх главного
-            self?.navigationController?.popToRootViewController(animated: true)
-        })
-        present(alert, animated: true)
+            alert.addAction(UIAlertAction(title: "OK", style: .default) { [weak self] _ in    // 🆕 weak self
+                self?.navigationController?.popToRootViewController(animated: true)
+            })
+            present(alert, animated: true)
     }
 
     private func showAlert(title: String, message: String) {
@@ -184,6 +187,8 @@ final class CheckoutViewController: UIViewController {
         present(alert, animated: true)
     }
 }
+
+//  MARK: CheckoutViewController + UITableViewDataSource
 
 extension CheckoutViewController: UITableViewDataSource {
 

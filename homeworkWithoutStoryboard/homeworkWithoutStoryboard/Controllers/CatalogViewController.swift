@@ -7,6 +7,7 @@
 
 import UIKit
 import SnapKit
+import Combine
 
 final class CatalogViewController: UIViewController {
 
@@ -17,8 +18,8 @@ final class CatalogViewController: UIViewController {
         return cart
     }
     
-    
     private let tableManager = CatalogTableManager()
+    private var cancellables = Set<AnyCancellable>()
 
     //  настройка главного тайтла
     private let titleLabel: UILabel = {
@@ -91,20 +92,23 @@ final class CatalogViewController: UIViewController {
             return 0
         }
         
-        // когда в ячейке нажали "+", добавляем товар в корзину
-        // onAddProduct - свойство-замыкание
-        // оно получает product и ничего не возвращает, а просто меняет значения в корзине
-        tableManager.onAddProduct = { product in
-            _ = cart.addItemCart(name: product.name, count: 1)
-            self.tableView.reloadData()
-        }
+        //  когда в ячейке нажали "+"
+        tableManager.addTapped
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] product in
+                _ = cart.addItemCart(name: product.name, count: 1)
+                self?.tableView.reloadData()
+            }
+            .store(in: &cancellables)
 
-        // когда в ячейке нажали "−", убираем товар из корзины
-        // мы в контроллере определяем поведение замыканий
-        tableManager.onRemoveProduct = { product in
-            _ = cart.removeItem(name: product.name, count: 1)
-            self.tableView.reloadData()
-        }
+        // когда в ячейке нажали "−"
+        tableManager.removeTapped
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] product in
+                _ = cart.removeItem(name: product.name, count: 1)
+                self?.tableView.reloadData()
+            }
+            .store(in: &cancellables)
     }
     
     //  Перед появлением

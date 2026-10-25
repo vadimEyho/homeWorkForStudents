@@ -1,5 +1,5 @@
 import UIKit
-
+import Combine
 import Foundation
 
 // только классы могут быть делегатами (поэтому AnyObject)
@@ -19,11 +19,14 @@ final class CatalogTableManager: NSObject {
     // названия категорий (заголовки секций)
     private var sectionTitles: [String] = []
 
-    // пользователь нажимает "+" или "−"
-    // это свойство-замыкание
-    // void - ничего не возвращает
-    var onAddProduct: ((Product) -> Void)?
-    var onRemoveProduct: ((Product) -> Void)?
+//    // пользователь нажимает "+" или "−"
+//    // это свойство-замыкание
+//    // void - ничего не возвращает
+//    var onAddProduct: ((Product) -> Void)?
+//    var onRemoveProduct: ((Product) -> Void)?
+    
+    let addTapped = PassthroughSubject<Product, Never>()
+    let removeTapped = PassthroughSubject<Product, Never>()
 
     // сюда контроллер положит функцию, которая скажет, сколько товара в корзине
     var countForProduct: ((Product) -> Int)?
@@ -132,8 +135,8 @@ extension CatalogTableManager: ProductCellDelegate {
         // проверяем что товар реально есть
         guard let product = product(at: indexPath) else { return }
 
-        // вызываем слот
-        onAddProduct?(product)
+        //  комбайн
+        addTapped.send(product)
     }
 
     // нажали "−" в ячейке
@@ -142,6 +145,7 @@ extension CatalogTableManager: ProductCellDelegate {
         guard let indexPath = tableView.indexPath(for: cell) else { return }
         guard let product = product(at: indexPath) else { return }
 
-        onRemoveProduct?(product)
+        //  комбайн
+        removeTapped.send(product)
     }
 }

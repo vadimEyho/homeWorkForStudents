@@ -20,9 +20,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         window = UIWindow(windowScene: windowScene)
         
-        //  для погоды
-        let tabBarController = MainTabBarController()
         //  для TabBar'a
+        let tabBarController = MainTabBarController()
+        
+        //  для погоды
         let weatherViewController = WeatherViewController()
 
         window?.rootViewController = tabBarController

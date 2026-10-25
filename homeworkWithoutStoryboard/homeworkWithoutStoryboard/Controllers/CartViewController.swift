@@ -7,14 +7,14 @@
 
 import UIKit
 import SnapKit
+import Combine
 
 final class CartViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
 
     //  каталог получим из DataStore
-    private var currentCart: Cart {
-        return cart
-    }
-    
+    private var currentCart: Cart { cart  }
+    private var cancellables = Set<AnyCancellable>()
+
     //  лейбл если корзина пуста
     private let emptyLabel: UILabel = {
         let label = UILabel()
@@ -80,16 +80,20 @@ final class CartViewController: UIViewController, UITableViewDataSource, UITable
         clearButton = UIBarButtonItem(
             title: "Очистить",
             style: .plain,
-            target: self,
-            action: #selector(clearCart)
+            target: nil,
+            action: nil
         )
+        
+        clearButton.primaryAction = UIAction { [weak self] _ in
+            self?.clearCart()
+        }
         
         //  навигация сверху
         navigationItem.rightBarButtonItem = clearButton
         
         setupUI()
         setupTableView()
-        setupActions()
+        bindActions()
         updateUI()
     }
     
@@ -202,41 +206,45 @@ final class CartViewController: UIViewController, UITableViewDataSource, UITable
         tableView.reloadData()
     }
     
-    private func setupActions() {
-        placeOrderButton.addTarget(
-            self,
-            action: #selector(placeOrderTapped),
-            for: .touchUpInside
-        )
+    private func bindActions() {
+        placeOrderButton.tapPublisher
+            .sink { [weak self] in self?.placeOrderTapped() }
+            .store(in: &cancellables)
     }
     
-    @objc private func clearCart() {
-        guard currentCart.count > 0 else {
-            showAlert(title: "Корзина пуста", message: "Нечего очищать")
-            return
-        }
-        
-        let alert = UIAlertController(
-            title: "Очистить корзину",
-            message: "Вы уверены, что хотите удалить все товары?",
-            preferredStyle: .alert
-        )
-        
-//        alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: "Default action"), style: .default, handler: { _ in
-//        NSLog("The \"OK\" alert occured.")
-//        }))
-        
-        alert.addAction(UIAlertAction(title: "Очистить", style: .destructive) { _ in
-            for item in self.currentCart.getAllItems() {
-                _ = self.currentCart.removeItem(name: item.product.name, count: item.count)
+    private func clearCart() {
+            guard currentCart.count > 0 else {
+                showAlert(title: "Корзина пуста", message: "Нечего очищать")
+                return
             }
-            self.updateUI()
-            self.showAlert(title: "Готово", message: "Корзина очищена")
-        })
-        
-        alert.addAction(UIAlertAction(title: "Отмена", style: .cancel))
-        present(alert, animated: true)
-    }
+
+            let alert = UIAlertController(
+                title: "Очистить корзину",
+                message: "Вы уверены, что хотите удалить все товары?",
+                preferredStyle: .alert
+            )
+
+            alert.addAction(UIAlertAction(title: "Очистить", style: .destructive) { [weak self] _ in
+                guard let self else { return }
+                for item in currentCart.getAllItems() {
+                    _ = currentCart.removeItem(name: item.product.name, count: item.count)
+                }
+                updateUI()
+                showAlert(title: "Готово", message: "Корзина очищена")
+            })
+
+            alert.addAction(UIAlertAction(title: "Отмена", style: .cancel))
+            present(alert, animated: true)
+        }
+
+        private func placeOrderTapped() {
+            guard currentCart.count > 0 else {
+                showAlert(title: "Корзина пуста", message: "Добавьте товары перед оформлением")
+                return
+            }
+            let checkoutVC = CheckoutViewController(cart: currentCart)
+            navigationController?.pushViewController(checkoutVC, animated: true)
+        }
     
     //  фабрика алертов
     private func showAlert(title: String, message: String) {
@@ -244,14 +252,12 @@ final class CartViewController: UIViewController, UITableViewDataSource, UITable
         alert.addAction(UIAlertAction(title: "OK", style: .default))
         present(alert, animated: true)
     }
-    
-    @objc private func placeOrderTapped() {
-        guard currentCart.count > 0 else {
-            showAlert(title: "Корзина пуста", message: "Добавьте товары перед оформлением")
-            return
-        }
-        
-        let checkoutVC = CheckoutViewController(cart: currentCart)
-        navigationController?.pushViewController(checkoutVC, animated: true)
+}
+
+extension UIButton {
+    var tapPublisher: AnyPublisher<Void, Never> {
+        let subject = PassthroughSubject<Void, Never>()
+        addAction(UIAction { _ in subject.send(()) }, for: .touchUpInside)
+        return subject.eraseToAnyPublisher()
     }
 }
